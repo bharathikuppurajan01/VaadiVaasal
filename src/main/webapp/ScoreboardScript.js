@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const matchContainer = document.getElementById("matchContainer");
     const addMatchForm = document.getElementById("addMatchForm");
+    const themeToggle = document.getElementById("theme-toggle");
 
     if (!matchContainer || !addMatchForm) {
         console.error("Error: matchContainer or addMatchForm not found in the HTML.");
@@ -76,10 +77,30 @@ document.addEventListener("DOMContentLoaded", function () {
         addMatchForm.reset();
     });
 
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark-mode");
-        themeToggle.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
-    });
+    if (themeToggle) {
+        // Initialize button state based on current class (applied by inline script)
+        const isDarkModeInitial = document.body.classList.contains("dark-mode");
+        themeToggle.textContent = isDarkModeInitial ? "☀️ Light Mode" : "🌙 Dark Mode";
+        themeToggle.style.border = isDarkModeInitial ? "2px solid white" : "2px solid orange";
+
+        themeToggle.addEventListener("click", function () {
+            document.body.classList.toggle("dark-mode");
+            document.documentElement.classList.toggle("dark-mode"); // Sync html tag
+
+            const isDarkMode = document.body.classList.contains("dark-mode");
+            console.log("Dark mode toggled. Current state:", isDarkMode);
+
+            // Save preference
+            localStorage.setItem('darkMode', isDarkMode);
+
+            // Update button
+            const btn = document.getElementById("theme-toggle");
+            btn.textContent = isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode";
+            btn.style.border = isDarkMode ? "2px solid white" : "2px solid orange";
+        });
+    } else {
+        console.warn("Theme toggle button not found. Dark mode functionality disabled.");
+    }
 
     renderMatches();
 });
